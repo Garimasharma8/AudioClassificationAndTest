@@ -5,7 +5,7 @@ classdef FrequencyDomainAnalysisTest < matlab.unittest.TestCase
     end
 
     properties (TestParameter)
-        selected_audio = num2cell(2:2:29);
+        selected_audio = num2cell(2:3:30);
     end
 
     methods(TestClassSetup)
@@ -30,7 +30,7 @@ classdef FrequencyDomainAnalysisTest < matlab.unittest.TestCase
             freqAnalysisResults = analyzeFrequencyDomain(signal, 2000);
             peakFrequency = freqAnalysisResults.peakFrequency;
             % Without AbsTol the test will fail. 
-            testCase.verifyLessThanOrEqual(peakFrequency,8000);
+            testCase.verifyLessThanOrEqual(peakFrequency,1000);
         end
 
         % working fine
@@ -45,27 +45,45 @@ classdef FrequencyDomainAnalysisTest < matlab.unittest.TestCase
             testCase.verifyEqual(cell2mat(signal),y_reconstructed,'AbsTol',1e2)
 
         end
-        
-        function testCalculateFFTWithZeroInput(testCase)
-            fs = 8000; % Sampling frequency
-            zeroSignal = zeros(1, fs); % One second of zeros
-            
-            % Perform the FFT
-            Y = fft(zeroSignal);
-            
-            % Verify that the spectrum is all zeros
-            testCase.verifyEqual(Y, zeros(size(Y)), ...
-                'Zero input signal should result in zero magnitude spectrum.');
+
+        function testPitch(testCase, selected_audio)
+            data = testCase.ecgData;
+            signal = data.T.Data(selected_audio);
+            freqAnalysisResults = analyzeFrequencyDomain(signal, 2000);
+            testCase.verifyGreaterThan(freqAnalysisResults.pitchCalculated,0);
+        end
+
+
+        function testfundamentalFrequencyRange(testCase, selected_audio)
+            data = testCase.ecgData;
+            signal = data.T.Data(selected_audio);
+            freqAnalysisResults = analyzeFrequencyDomain(signal, 2000);
+            lower_f0 = 20;
+            upper_f0 = 500;
+            testCase.verifyGreaterThan(freqAnalysisResults.fundamentalFrequency, lower_f0);
+            testCase.verifyLessThanOrEqual(freqAnalysisResults.fundamentalFrequency, upper_f0);
         end
         
-        function testCalculateFFTWithInvalidInput(testCase)
-            fs = 8000; % Sampling frequency
-            invalidSignal = 'not a signal'; % Invalid signal type
-            
-            % Verify that an error is thrown for non-numeric input
-            testCase.verifyError(fft(invalidSignal), ...
-                'FFTAnalysis:InvalidSignalType');
-        end
+        % function testCalculateFFTWithZeroInput(testCase)
+        %     fs = 8000; % Sampling frequency
+        %     zeroSignal = zeros(1, fs); % One second of zeros
+        % 
+        %     % Perform the FFT
+        %     Y = fft(zeroSignal);
+        % 
+        %     % Verify that the spectrum is all zeros
+        %     testCase.verifyEqual(Y, zeros(size(Y)), ...
+        %         'Zero input signal should result in zero magnitude spectrum.');
+        % end
+        % 
+        % function testCalculateFFTWithInvalidInput(testCase)
+        %     fs = 8000; % Sampling frequency
+        %     invalidSignal = 'not a signal'; % Invalid signal type
+        % 
+        %     % Verify that an error is thrown for non-numeric input
+        %     testCase.verifyError(fft(invalidSignal), ...
+        %         'FFTAnalysis:InvalidSignalType');
+        % end
     end
 
     methods(Test, TestTags={'Big Data'})

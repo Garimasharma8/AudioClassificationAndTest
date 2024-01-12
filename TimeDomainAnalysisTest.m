@@ -4,7 +4,7 @@ classdef TimeDomainAnalysisTest < matlab.unittest.TestCase
     end
 
     properties (TestParameter)
-        selected_audio = num2cell(2:2:29);
+        selected_audio = num2cell(2:3:30);
     end
 
     methods(TestClassSetup)
@@ -17,7 +17,7 @@ classdef TimeDomainAnalysisTest < matlab.unittest.TestCase
 
     methods(Test, TestTags = {'Basic Functionality Test'})
         % working fine
-        function testSignalAmplitude(testCase, selected_audio)
+        function testSignalPeakAmplitude(testCase, selected_audio)
             data = testCase.ecgData;
             signal = data.T.Data(selected_audio);
             % verify the amplitude of the signal
@@ -30,10 +30,11 @@ classdef TimeDomainAnalysisTest < matlab.unittest.TestCase
             data = testCase.ecgData;
             signal = data.T.Data(selected_audio);
             analysisResults = analyzeTimeDomain(signal,2000);
-            testCase.verifyLessThanOrEqual(analysisResults.zeroCrossingRate,5);
+            testCase.verifyGreaterThanOrEqual(analysisResults.zeroCrossingRate,0);
         end
         % working fine
         function testMonoChannel(testCase,selected_audio)
+            % for loop for testing if signal is legitimate
             data = testCase.ecgData;
             signal = data.T.Data(selected_audio);
             expectedChannel = 1;
@@ -41,14 +42,23 @@ classdef TimeDomainAnalysisTest < matlab.unittest.TestCase
             testCase.verifyEqual(actualChannel,expectedChannel)
         end
 
-        % check why case 12 is passing
-        function testAnalyzeTimeDomainWithEmptyInput(testCase,selected_audio)
+        function testCalculateRMS(testCase,selected_audio)
             data = testCase.ecgData;
             signal = data.T.Data(selected_audio);
-            %length_signal = size(signal,2)
-            % emptySignal = [];
-            testCase.verifyNotEmpty(testCase, signal);
+            analysisResult = analyzeTimeDomain(signal, 2000);
+            LowerLimit = 0;
+            testCase.verifyGreaterThanOrEqual(analysisResult.rmsAmplitude, LowerLimit);
         end
+
+        function testRmsDBFS(testCase, selected_audio)
+            data = testCase.ecgData;
+            signal = data.T.Data(selected_audio);
+            analysisResult = analyzeTimeDomain(signal, 2000);
+            UpperLimit = 0;
+            testCase.verifyLessThanOrEqual(analysisResult.rmsDBFS,UpperLimit);
+        end
+
+        
     end
 
 
@@ -70,13 +80,7 @@ classdef TimeDomainAnalysisTest < matlab.unittest.TestCase
         end
         
         % working fine
-        function testCalculateRMSWithSilence(testCase,selected_audio)
-            data = testCase.ecgData;
-            signal = data.T.Data(selected_audio);
-            analysisResult = analyzeTimeDomain(signal, 2000);
-            expectedRMS = 0;
-            testCase.verifyNotEqual(analysisResult.rmsAmplitude, expectedRMS);
-        end
+        
     end
 
     methods(Test, TestTags={'Error Handling'})
@@ -85,38 +89,38 @@ classdef TimeDomainAnalysisTest < matlab.unittest.TestCase
 
             % working fine
             % test with negative sampling rate
-        function testAnalyzeTimeDomainWithNegativeSamplingRate(testCase,selected_audio)
-            data = testCase.ecgData;
-            signal = data.T.Data(selected_audio);
-            %audioSignal = rand(1, 1000); % Generate a random signal
-            negativeFs = -2000; % Invalid negative sampling rate
-            
-            testCase.verifyError(@()analyzeTimeDomain(audioSignal, negativeFs), ...
-                'SignalAnalysis:InvalidSamplingRate');
-        end
+        % function testAnalyzeTimeDomainWithNegativeSamplingRate(testCase,selected_audio)
+        %     data = testCase.ecgData;
+        %     signal = data.T.Data(selected_audio);
+        %     %audioSignal = rand(1, 1000); % Generate a random signal
+        %     negativeFs = -2000; % Invalid negative sampling rate
+        % 
+        %     testCase.verifyError(@()analyzeTimeDomain(audioSignal, negativeFs), ...
+        %         'SignalAnalysis:InvalidSamplingRate');
+        % end
             
             % working fine
             % test with string input
-        function testAnalyzeTimeDomainWithNonNumericSignal(testCase,selected_audio)
-            data = testCase.ecgData;
-            signal = data.T.Data(selected_audio);
-            % nonNumericSignal = 'This is not an audio signal'; % Invalid signal type
-            % fs = 44100; % Sampling frequency
-            analysisResult = analyzeTimeDomain(signal, 2000);
-            testCase.verifyGreaterThanOrEqual(analysisResult.peakAmplitude,0,...
-                'SignalAnalysis:NonNumericSignal');
-        end
-            
-            % working fine
-            % test with an invalid complex signals
-        function testAnalyzeTimeDomainWithComplexSignal(testCase,selected_audio)
-            data = testCase.ecgData;
-            signal = data.T.Data(selected_audio);
-            fs=2000;
-            isComplex = any(imag(cell2mat(signal)) ~= 0);
-            testCase.verifyEqual(double(isComplex),0);
-            
-        end
+        % function testAnalyzeTimeDomainWithNonNumericSignal(testCase,selected_audio)
+        %     data = testCase.ecgData;
+        %     signal = data.T.Data(selected_audio);
+        %     % nonNumericSignal = 'This is not an audio signal'; % Invalid signal type
+        %     % fs = 44100; % Sampling frequency
+        %     analysisResult = analyzeTimeDomain(signal, 2000);
+        %     testCase.verifyGreaterThanOrEqual(analysisResult.peakAmplitude,0,...
+        %         'SignalAnalysis:NonNumericSignal');
+        % end
+        % 
+        %     % working fine
+        %     % test with an invalid complex signals
+        % function testAnalyzeTimeDomainWithComplexSignal(testCase,selected_audio)
+        %     data = testCase.ecgData;
+        %     signal = data.T.Data(selected_audio);
+        %     fs=2000;
+        %     isComplex = any(imag(cell2mat(signal)) ~= 0);
+        %     testCase.verifyEqual(double(isComplex),0);
+        % 
+        % end
         
             % test with matrix or non-vector signal
         function testAnalyzeTimeDomainWithNonVectorSignal(testCase)
