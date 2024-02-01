@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Info File="Algorithm/checkSignalIntegrity.m" GroupUUID="" Icon="" Name="checkSignalIntegrity" Type="StartUp" Visible="0">
+    <Extension Name="StartUpPrev" Value="1c00efcc-9197-4679-875b-9194cbd8a9f4"/>
+</Info>

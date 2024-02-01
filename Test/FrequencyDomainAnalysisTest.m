@@ -6,7 +6,7 @@ classdef FrequencyDomainAnalysisTest < matlab.unittest.TestCase
     end
 
     properties (TestParameter)
-        selected_audio = num2cell(2:2:38);
+        selected_audio = num2cell(1:1:30);
     end
 
     methods(TestClassSetup)
