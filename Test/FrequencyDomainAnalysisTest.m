@@ -63,26 +63,7 @@ classdef FrequencyDomainAnalysisTest < matlab.unittest.TestCase
             testCase.verifyLessThanOrEqual(freqAnalysisResults.fundamentalFrequency, upper_f0);
         end
         
-        % function testCalculateFFTWithZeroInput(testCase)
-        %     fs = 8000; % Sampling frequency
-        %     zeroSignal = zeros(1, fs); % One second of zeros
-        % 
-        %     % Perform the FFT
-        %     Y = fft(zeroSignal);
-        % 
-        %     % Verify that the spectrum is all zeros
-        %     testCase.verifyEqual(Y, zeros(size(Y)), ...
-        %         'Zero input signal should result in zero magnitude spectrum.');
-        % end
-        % 
-        % function testCalculateFFTWithInvalidInput(testCase)
-        %     fs = 8000; % Sampling frequency
-        %     invalidSignal = 'not a signal'; % Invalid signal type
-        % 
-        %     % Verify that an error is thrown for non-numeric input
-        %     testCase.verifyError(fft(invalidSignal), ...
-        %         'FFTAnalysis:InvalidSignalType');
-        % end
+        
     end
 
     methods(Test, TestTags={'Big Data'})

@@ -85,44 +85,7 @@ classdef TimeDomainAnalysisTest < matlab.unittest.TestCase
 
     methods(Test, TestTags={'Error Handling'})
 
-        % error handling test: Test Invalid inputs
-
-            % working fine
-            % test with negative sampling rate
-        % function testAnalyzeTimeDomainWithNegativeSamplingRate(testCase,selected_audio)
-        %     data = testCase.ecgData;
-        %     signal = data.T.Data(selected_audio);
-        %     %audioSignal = rand(1, 1000); % Generate a random signal
-        %     negativeFs = -2000; % Invalid negative sampling rate
-        % 
-        %     testCase.verifyError(@()analyzeTimeDomain(audioSignal, negativeFs), ...
-        %         'SignalAnalysis:InvalidSamplingRate');
-        % end
-            
-            % working fine
-            % test with string input
-        % function testAnalyzeTimeDomainWithNonNumericSignal(testCase,selected_audio)
-        %     data = testCase.ecgData;
-        %     signal = data.T.Data(selected_audio);
-        %     % nonNumericSignal = 'This is not an audio signal'; % Invalid signal type
-        %     % fs = 44100; % Sampling frequency
-        %     analysisResult = analyzeTimeDomain(signal, 2000);
-        %     testCase.verifyGreaterThanOrEqual(analysisResult.peakAmplitude,0,...
-        %         'SignalAnalysis:NonNumericSignal');
-        % end
-        % 
-        %     % working fine
-        %     % test with an invalid complex signals
-        % function testAnalyzeTimeDomainWithComplexSignal(testCase,selected_audio)
-        %     data = testCase.ecgData;
-        %     signal = data.T.Data(selected_audio);
-        %     fs=2000;
-        %     isComplex = any(imag(cell2mat(signal)) ~= 0);
-        %     testCase.verifyEqual(double(isComplex),0);
-        % 
-        % end
-        
-            % test with matrix or non-vector signal
+             
         function testAnalyzeTimeDomainWithNonVectorSignal(testCase)
             nonVectorSignal = rand(100, 2); % Invalid signal shape (matrix instead of vector)
             fs = 2000; % Sampling frequency
