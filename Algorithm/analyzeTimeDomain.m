@@ -8,8 +8,6 @@ function analysisResults = analyzeTimeDomain(audioSignal, fs)
     % convert audio signal to matrix if it is stored in a cell
     if iscell(audioSignal)
         audioSignal = cell2mat(audioSignal);
-    else
-        audioSignal = audioSignal;
     end
     % 
     % % Convert audio signal to mono channel
